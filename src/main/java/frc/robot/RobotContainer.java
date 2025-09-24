@@ -9,7 +9,9 @@ import frc.robot.commands.Autos;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.PivotArm;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
@@ -30,6 +32,13 @@ public class RobotContainer {
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     // Configure the trigger bindings
+
+    SmartDashboard.putBoolean("Intaking...", false);
+    SmartDashboard.putBoolean("At Intake Setpoint", pivotArm.atIntakeSetpoint());
+    SmartDashboard.putNumber("Pivot Pos", pivotArm.getPivotPosition());
+    SmartDashboard.putNumber("Wrist Pos", pivotArm.getWristPosition());
+    SmartDashboard.putNumber("Wrist Error", Constants.PivotArmConstants.wristIntakePosition - pivotArm.getWristPosition());
+
     configureBindings();
   }
 
@@ -44,8 +53,11 @@ public class RobotContainer {
    */
   private void configureBindings() {
     
-    m_driverController.a().onFalse(pivotArm.intake()); // on button release
-    m_driverController.b().onFalse(pivotArm.outtake()); // on button release
+    m_driverController.a().onFalse(Commands.runOnce(() -> {
+      pivotArm.setWristPosition(0);
+    }));
+    // m_driverController.a().onFalse(pivotArm.intake()); // on button release
+    // m_driverController.b().onFalse(pivotArm.outtake()); // on button release
   }
 
   /**
