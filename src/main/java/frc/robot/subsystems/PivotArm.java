@@ -19,7 +19,10 @@ import com.ctre.phoenix6.signals.SensorDirectionValue;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.Constants;
 
 // 1 rotation = 360 degrees
@@ -45,7 +48,7 @@ public class PivotArm extends SubsystemBase {
 
     CANcoderConfiguration wristCCCfg = new CANcoderConfiguration();
     wristCCCfg.MagnetSensor = new MagnetSensorConfigs()
-        .withMagnetOffset( /* your measured offset in rotations */ 0.09);
+        .withMagnetOffset(Constants.PivotArmConstants.wristOffset);
     wristCCCfg.MagnetSensor.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;
     wristCC.getConfigurator().apply(wristCCCfg);
 
@@ -55,8 +58,7 @@ public class PivotArm extends SubsystemBase {
     wristMotor.setPosition(wristCC.getAbsolutePosition().getValueAsDouble());
 
     wristFb.SensorToMechanismRatio = Constants.PivotArmConstants.wristSensorToMechanismRatio;
-    // wristFb.RotorToSensorRatio =
-    // Constants.PivotArmConstants.wristRotorToSensorRatio;
+    // wristFb.RotorToSensorRatio = Constants.PivotArmConstants.wristRotorToSensorRatio;
     wristFb.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
     // wristFb.FeedbackRemoteSensorID = Constants.PivotArmConstants.wristEncoderId;
     wristCfg.Feedback = wristFb;
@@ -142,57 +144,47 @@ public class PivotArm extends SubsystemBase {
   }
 
   public void setWristPosition(double targetRotations) {
-    // wristMotor.setControl(wristMmReq.withPosition(targetRotations));
-    // if (targetRotations - getWristPosition() < 0) {
-    //   TalonFXConfiguration config = new TalonFXConfiguration();
-    //   config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
-    //   wristMotor.getConfigurator().apply(config);
-    // } else {
-    //   TalonFXConfiguration config = new TalonFXConfiguration();
-    //   config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
-    //   wristMotor.getConfigurator().apply(config);
-    // }
     wristMotor.setControl(wristPosReq.withPosition(targetRotations));
   }
 
   public void setPivotPosition(double targetRotations) {
-    // pivotMotor.setControl(pivotMmReq.withPosition(targetRotations));
     pivotMotor.setControl(pivotPosReq.withPosition(targetRotations));
   }
 
   public Command intake() {
-    // return Commands.startEnd(
-    // () -> {
-    // SmartDashboard.putBoolean("Intaking...", true);
-    // SmartDashboard.putBoolean("At Intake Setpoint", atIntakeSetpoint());
-    // SmartDashboard.putNumber("Pivot Pos", getPivotPosition());
-    // SmartDashboard.putNumber("Wrist Pos", getWristPosition());
-    // SmartDashboard.putNumber("Wrist Error",
-    // Constants.PivotArmConstants.wristIntakePosition - getWristPosition());
-
-    // setWristPosition(Constants.PivotArmConstants.wristIntakePosition);
-    // // setPivotPosition(Constants.PivotArmConstants.pivotIntakePosition);
-    // }, () -> {
-    // return atIntakeSetpoint();
-    // }, this).until(() -> atIntakeSetpoint());
-    return Commands.runOnce(() -> {
-      SmartDashboard.putBoolean("Intaking...", true);
-      SmartDashboard.putBoolean("At Intake Setpoint", atIntakeSetpoint());
-      SmartDashboard.putNumber("Pivot Pos", getPivotPosition());
-      SmartDashboard.putNumber("Wrist Pos", getWristPosition());
-      SmartDashboard.putNumber("Wrist Error", Constants.PivotArmConstants.wristIntakePosition - getWristPosition());
-
-      setWristPosition(Constants.PivotArmConstants.wristIntakePosition);
-    }, this);
+    return new SequentialCommandGroup(
+      new InstantCommand(() -> {
+        setPivotPosition(Constants.PivotArmConstants.pivotIntakePosition);
+      }, this),
+      new WaitUntilCommand(this::pivotAtIntake).withTimeout(0.5),
+      new InstantCommand(() -> {
+        setWristPosition(Constants.PivotArmConstants.wristIntakePosition);
+      }, this)
+    );
   }
 
-  public Command outtake() {
-    return Commands.run(
-        () -> {
-          System.out.println("Started Outtaking...");
-          setWristPosition(Constants.PivotArmConstants.wristOuttakePosition);
-          setPivotPosition(Constants.PivotArmConstants.pivotOuttakePosition);
-        }, this).until(() -> atOuttakeSetpoint());
+  public Command outtakeLeft() {
+    return new SequentialCommandGroup(
+      new InstantCommand(() -> {
+        setPivotPosition(Constants.PivotArmConstants.pivotOuttakePosition);
+      }, this),
+      new WaitUntilCommand(this::pivotAtOuttake).withTimeout(0.5),
+      new InstantCommand(() -> {
+        setWristPosition(Constants.PivotArmConstants.wristOuttakeLeftPosition);
+      }, this)
+    );
+  }
+
+  public Command outtakeRight() {
+    return new SequentialCommandGroup(
+      new InstantCommand(() -> {
+        setPivotPosition(Constants.PivotArmConstants.pivotOuttakePosition);
+      }, this),
+      new WaitUntilCommand(this::pivotAtOuttake).withTimeout(0.5),
+      new InstantCommand(() -> {
+        setWristPosition(Constants.PivotArmConstants.wristOuttakeRightPosition);
+      }, this)
+    );
   }
 
   public boolean atIntakeSetpoint() {
@@ -201,10 +193,26 @@ public class PivotArm extends SubsystemBase {
     return wristError < 0.02 && pivotError < 0.02; // tolerance
   }
 
-  public boolean atOuttakeSetpoint() {
-    double wristError = Math.abs(getWristPosition() - Constants.PivotArmConstants.wristOuttakePosition);
+  public boolean atOuttakeLeftSetpoint() {
+    double wristError = Math.abs(getWristPosition() - Constants.PivotArmConstants.wristOuttakeLeftPosition);
     double pivotError = Math.abs(getPivotPosition() - Constants.PivotArmConstants.pivotOuttakePosition);
     return wristError < 0.02 && pivotError < 0.02; // tolerance
+  }
+
+  public boolean atOuttakeRightSetpoint() {
+    double wristError = Math.abs(getWristPosition() - Constants.PivotArmConstants.wristOuttakeRightPosition);
+    double pivotError = Math.abs(getPivotPosition() - Constants.PivotArmConstants.pivotOuttakePosition);
+    return wristError < 0.02 && pivotError < 0.02; // tolerance
+  }
+
+  public boolean pivotAtIntake() {
+    double pivotError = Math.abs(getPivotPosition() - Constants.PivotArmConstants.pivotIntakePosition);
+    return pivotError < 0.02; // tolerance
+  }
+
+  public boolean pivotAtOuttake() {
+    double pivotError = Math.abs(getPivotPosition() - Constants.PivotArmConstants.pivotOuttakePosition);
+    return pivotError < 0.02; // tolerance
   }
 
   public double getWristPosition() {

@@ -52,12 +52,9 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
-    
-    m_driverController.a().onFalse(Commands.runOnce(() -> {
-      pivotArm.setWristPosition(0);
-    }));
-    // m_driverController.a().onFalse(pivotArm.intake()); // on button release
-    // m_driverController.b().onFalse(pivotArm.outtake()); // on button release
+    m_driverController.y().onTrue(pivotArm.intake());
+    m_driverController.a().onTrue(pivotArm.outtakeLeft());
+    m_driverController.b().onTrue(pivotArm.outtakeRight());
   }
 
   /**

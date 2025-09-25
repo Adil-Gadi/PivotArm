@@ -34,18 +34,19 @@ public final class Constants {
     // public static final int pivotEncoderId = -1;
 
     public static final double wristIntakePosition = 0; // rotations
-    // public static final double wristIntakePosition = -0.5; // rotations
     public static final double pivotIntakePosition = 0.25; // rotations
-    public static final double wristOuttakePosition = 0.25; // rotations
+    public static final double wristOuttakeLeftPosition = 0.25; // rotations
+    public static final double wristOuttakeRightPosition = -wristOuttakeLeftPosition; // rotations
     public static final double pivotOuttakePosition = 0.15; // rotations
 
+    public static final double wristOffset = 0.0876;
+
     public static final double wristSensorToMechanismRatio = 5.583; // change to your mechanism ratio
-    // public static final double wristSensorToMechanismRatio = 1; // change to your mechanism ratio
     public static final double wristRotorToSensorRatio = 1.0; // 1.0 for internal sensor (set appropriately if fusing a
                                                              // CANcoder)
-    public static final double wristkP = 0.1;
-    public static final double wristkI = 0;
-    public static final double wristkD = 0.1;
+    public static final double wristkP = 0.6;
+    public static final double wristkI = 0.1;
+    public static final double wristkD = 0.05;
     public static final double wristkS = 0.1;
     public static final double wristkV = 0.1;
     public static final double wristkA = 0;
@@ -54,9 +55,9 @@ public final class Constants {
     public static final double pivotSensorToMechanismRatio = 30.0; // change to your mechanism ratio
     public static final double pivotRotorToSensorRatio = 1.0; // 1.0 for internal sensor (set appropriately if fusing a
                                                              // CANcoder)
-    public static final double pivotkP = 0.1;
-    public static final double pivotkI = 0;
-    public static final double pivotkD = 0.0;
+    public static final double pivotkP = 0.4;
+    public static final double pivotkI = 0.1;
+    public static final double pivotkD = 0.05;
     public static final double pivotkS = 0.0;
     public static final double pivotkV = 0.0;
     public static final double pivotkA = 0;
