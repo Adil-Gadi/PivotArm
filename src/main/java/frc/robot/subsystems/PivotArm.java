@@ -16,9 +16,7 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -33,8 +31,8 @@ public class PivotArm extends SubsystemBase {
   TalonFX wristMotor;
   CANcoder wristCC = new CANcoder(Constants.PivotArmConstants.wristEncoderId);
 
-  private final MotionMagicVoltage wristMmReq = new MotionMagicVoltage(0).withSlot(0);
-  private final MotionMagicVoltage pivotMmReq = new MotionMagicVoltage(0).withSlot(0);
+  // private final MotionMagicVoltage wristMmReq = new MotionMagicVoltage(0).withSlot(0);
+  // private final MotionMagicVoltage pivotMmReq = new MotionMagicVoltage(0).withSlot(0);
 
   private final PositionDutyCycle pivotPosReq = new PositionDutyCycle(0);
   private final PositionDutyCycle wristPosReq = new PositionDutyCycle(0);
@@ -80,8 +78,8 @@ public class PivotArm extends SubsystemBase {
 
     wristCfg.CurrentLimits.SupplyCurrentLimitEnable = true;
     wristCfg.CurrentLimits.SupplyCurrentLimit = 30.0;
-    wristCfg.MotorOutput.PeakForwardDutyCycle = 0.1;
-    wristCfg.MotorOutput.PeakReverseDutyCycle = -0.1;
+    wristCfg.MotorOutput.PeakForwardDutyCycle = 0.4;
+    wristCfg.MotorOutput.PeakReverseDutyCycle = -0.4;
     wristCfg.Voltage.PeakForwardVoltage = 4;
     wristCfg.Voltage.PeakReverseVoltage = -4;
     wristCfg.MotorOutput.NeutralMode = NeutralModeValue.Brake;
@@ -120,6 +118,8 @@ public class PivotArm extends SubsystemBase {
 
     pivotCfg.CurrentLimits.SupplyCurrentLimitEnable = true;
     pivotCfg.CurrentLimits.SupplyCurrentLimit = 40.0;
+    pivotCfg.MotorOutput.PeakForwardDutyCycle = 0.4;
+    pivotCfg.MotorOutput.PeakReverseDutyCycle = -0.4;
     pivotCfg.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
     pivotMotor.getConfigurator().apply(pivotCfg);
