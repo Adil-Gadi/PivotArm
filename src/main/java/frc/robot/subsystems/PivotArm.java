@@ -156,7 +156,7 @@ public class PivotArm extends SubsystemBase {
       new InstantCommand(() -> {
         setPivotPosition(Constants.PivotArmConstants.pivotIntakePosition);
       }, this),
-      new WaitUntilCommand(this::pivotAtIntake).withTimeout(0.5),
+      new WaitUntilCommand(this::pivotAtIntake).withTimeout(3.0),
       new InstantCommand(() -> {
         setWristPosition(Constants.PivotArmConstants.wristIntakePosition);
       }, this)
@@ -168,7 +168,7 @@ public class PivotArm extends SubsystemBase {
       new InstantCommand(() -> {
         setPivotPosition(Constants.PivotArmConstants.pivotOuttakePosition);
       }, this),
-      new WaitUntilCommand(this::pivotAtOuttake).withTimeout(0.5),
+      new WaitUntilCommand(this::pivotAtOuttake).withTimeout(3.0),
       new InstantCommand(() -> {
         setWristPosition(Constants.PivotArmConstants.wristOuttakeLeftPosition);
       }, this)
@@ -180,7 +180,7 @@ public class PivotArm extends SubsystemBase {
       new InstantCommand(() -> {
         setPivotPosition(Constants.PivotArmConstants.pivotOuttakePosition);
       }, this),
-      new WaitUntilCommand(this::pivotAtOuttake).withTimeout(0.5),
+      new WaitUntilCommand(this::pivotAtOuttake).withTimeout(3.0),
       new InstantCommand(() -> {
         setWristPosition(Constants.PivotArmConstants.wristOuttakeRightPosition);
       }, this)
