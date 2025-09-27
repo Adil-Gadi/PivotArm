@@ -58,9 +58,9 @@ public final class Constants {
     public static final double pivotkP = 0.4;
     public static final double pivotkI = 0.1;
     public static final double pivotkD = 0.05;
-    public static final double pivotkS = 0.0;
-    public static final double pivotkV = 0.0;
+    public static final double pivotkS = 0.1;
+    public static final double pivotkV = 0.1;
     public static final double pivotkA = 0;
-    public static final double pivotkG = 0;
+    public static final double pivotkG = 0.1;
   }
 }

@@ -6,7 +6,6 @@ import com.ctre.phoenix6.configs.MagnetSensorConfigs;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.PositionDutyCycle;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -241,15 +240,6 @@ public class PivotArm extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-
-    // System.out.println("Pivot Position");
-    // System.out.println(getPivotPosition());
-    // System.out.println("Wrist Position");
-    // System.out.println(getWristPosition());
-    // System.out.println("At Intake");
-    // System.out.println(atIntakeSetpoint());
-    // System.out.println("At Outake");
-    // System.out.println(atOuttakeSetpoint());
   }
 
   @Override
